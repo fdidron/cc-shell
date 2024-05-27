@@ -25,6 +25,13 @@ fn main() {
                     let code = code.parse::<i32>().unwrap_or(1);
                     std::process::exit(code);
                 },
+                ["type", ..] => {
+                    let cmd = tokens[1];
+                    match cmd {
+                        "exit" | "type" | "echo" => println!("{} is a shell built-in", cmd),
+                        _ => println!("{} not found", cmd)
+                    }
+                },
                 ["echo"] => {
                     println!();
                 },
