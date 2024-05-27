@@ -9,4 +9,11 @@ fn main() {
     let stdin = io::stdin();
     let mut input = String::new();
     stdin.read_line(&mut input).unwrap();
+    let cmd = input.trim();
+
+    if cmd.is_empty() {
+        println!("No command entered");
+    } else {
+        println!("{}: command not found", cmd);
+    }
 }
