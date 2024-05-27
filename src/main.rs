@@ -44,7 +44,21 @@ fn main() {
                 ["echo", ..] => {
                     println!("{}", tokens[1..].join(" "));
                 }
-                _ => println!("{}: command not found", raw),
+                _ => {
+                    let cmd = tokens[0];
+                    let args = &tokens[1..];
+                    if let Some(path) = utils::find_executable(cmd) {
+                        let status = std::process::Command::new(path)
+                            .args(args)
+                            .status()
+                            .expect("failed to execute process");
+                        if !status.success() {
+                            eprintln!("{}: command failed with status {}", raw, status);
+                        }
+                    } else {
+                        eprintln!("{} command not found", raw)
+                    }
+                }
             }
         }
     }
