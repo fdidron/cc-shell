@@ -8,12 +8,10 @@ fn tokenize(input: &str) -> Vec<&str> {
 }
 
 fn main() {
-    print!("{}", PROMPT);
-    io::stdout().flush().unwrap();
-
-    // Wait for user input
     let stdin = io::stdin();
     loop {
+        print!("{}", PROMPT);
+        io::stdout().flush().unwrap();
         let mut input = String::new();
         stdin.read_line(&mut input).unwrap();
         let raw = input.trim();
@@ -41,8 +39,5 @@ fn main() {
                 _ => println!("{}: command not found", raw),
             }
         }
-        //io::stdout().flush().unwrap();
-        print!("{}", PROMPT);
-        io::stdout().flush().unwrap();
     }
 }
