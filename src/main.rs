@@ -3,6 +3,10 @@ use std::io::{self, Write};
 
 const PROMPT: &str  = "$ ";
 
+fn tokenize(input: &str) -> Vec<&str> {
+    input.split_whitespace().collect()
+}
+
 fn main() {
     print!("{}", PROMPT);
     io::stdout().flush().unwrap();
@@ -14,8 +18,13 @@ fn main() {
         stdin.read_line(&mut input).unwrap();
         let cmd = input.trim();
         if !cmd.is_empty() {
-            match cmd {
-                "exit" => break,
+            let tokens = tokenize(cmd);
+
+            match tokens[..] {
+                ["exit", code] => {
+                    let code = code.parse::<i32>().unwrap_or(1);
+                    std::process::exit(code);
+                }
                 _ => println!("{}: command not found", cmd)
             }
         }
