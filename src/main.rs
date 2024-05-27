@@ -31,13 +31,15 @@ fn main() {
                     }
                 }
                 ["echo"] => {
-                    println!();
+                    print!("");
                 }
                 ["echo", ..] => {
-                    println!("{}", tokens[1..].join(" "));
+                    print!("{}", tokens[1..].join(" "));
                 }
-                _ => println!("{}: command not found", raw),
+                _ => print!("{}: command not found", raw),
             }
+            println!();
+            io::stdout().flush().unwrap();
         }
     }
 }
