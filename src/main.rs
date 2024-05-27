@@ -1,6 +1,8 @@
 #[allow(unused_imports)]
 use std::io::{self, Write};
 
+mod utils;
+
 const PROMPT: &str = "$ ";
 
 fn tokenize(input: &str) -> Vec<&str> {
@@ -27,7 +29,13 @@ fn main() {
                     let cmd = tokens[1];
                     match cmd {
                         "exit" | "type" | "echo" => println!("{} is a shell builtin", cmd),
-                        _ => println!("{} not found", cmd),
+                        _ => {
+                            if let Some(path) = utils::find_executable(cmd) {
+                                println!("{} is {}", cmd, path.display());
+                            } else {
+                                println!("{} not found", cmd);
+                            }
+                        }
                     }
                 }
                 ["echo"] => {
