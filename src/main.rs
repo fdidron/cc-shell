@@ -56,7 +56,7 @@ fn main() {
                             eprintln!("{}: command failed with status {}", raw, status);
                         }
                     } else {
-                        eprintln!("{} command not found", raw)
+                        eprintln!("{}: command not found", raw)
                     }
                 }
             }
