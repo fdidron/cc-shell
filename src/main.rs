@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
 use std::io::{self, Write};
 
-const PROMPT: &str  = "$ ";
+const PROMPT: &str = "$ ";
 
 fn tokenize(input: &str) -> Vec<&str> {
     input.split_whitespace().collect()
@@ -24,24 +24,24 @@ fn main() {
                 ["exit", code] => {
                     let code = code.parse::<i32>().unwrap_or(1);
                     std::process::exit(code);
-                },
+                }
                 ["type", ..] => {
                     let cmd = tokens[1];
                     match cmd {
                         "exit" | "type" | "echo" => println!("{} is a shell built-in", cmd),
-                        _ => println!("{} not found", cmd)
+                        _ => println!("{} not found", cmd),
                     }
-                },
+                }
                 ["echo"] => {
                     println!();
-                },
-                ["echo",  ..] => {
+                }
+                ["echo", ..] => {
                     println!("{}", tokens[1..].join(" "));
                 }
-                _ => println!("{}: command not found", raw)
+                _ => println!("{}: command not found", raw),
             }
         }
-        io::stdout().flush().unwrap();
+        //io::stdout().flush().unwrap();
         print!("{}", PROMPT);
         io::stdout().flush().unwrap();
     }
