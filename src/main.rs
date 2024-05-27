@@ -26,7 +26,7 @@ fn main() {
                 ["type", ..] => {
                     let cmd = tokens[1];
                     match cmd {
-                        "exit" | "type" | "echo" => println!("{} is a shell built-in", cmd),
+                        "exit" | "type" | "echo" => println!("{} is a shell builtin", cmd),
                         _ => println!("{} not found", cmd),
                     }
                 }
