@@ -44,7 +44,7 @@ fn main() {
                     };
                     match builtins::cd(&path) {
                     Ok(_) => (),
-                    Err(CommandError::Failed) => eprintln!("cd: {}: No such file or directory", tokens[1]),
+                    Err(CommandError::Failed) => eprintln!("{}: No such file or directory", tokens[1]),
                     Err(_) => eprintln!("cd: wrong arguments"),
                 }
                 },
