@@ -35,6 +35,19 @@ fn main() {
                 ["type", ..] => builtins::type_cmd(tokens[1]),
                 ["echo"] => builtins::echo(None),
                 ["echo", ..] => builtins::echo(Some(&tokens[1..].join(" "))),
+                ["cd", ..] => {
+
+                    let path = if tokens.len() == 1 {
+                        std::env::var("HOME").unwrap()
+                    } else {
+                        tokens[1].to_string()
+                    };
+                    match builtins::cd(&path) {
+                    Ok(_) => (),
+                    Err(CommandError::Failed) => eprintln!("cd: {}: No such file or directory", tokens[1]),
+                    Err(_) => eprintln!("cd: wrong arguments"),
+                }
+                },
                 ["pwd"] => match builtins::pwd() {
                     Ok(_) => (),
                     Err(_) => eprintln!("pwd: failed to get current directory"),

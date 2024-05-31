@@ -1,18 +1,17 @@
 use crate::CommandError;
 
-
 pub fn exit() {
     std::process::exit(0);
 }
 
-pub fn exit_with_code(code: &str) -> Result<(), CommandError>{
+pub fn exit_with_code(code: &str) -> Result<(), CommandError> {
     match code.parse::<i32>() {
         Ok(code) => std::process::exit(code),
         Err(_) => Err(CommandError::WrongArguments),
     }
-} 
+}
 
-pub fn echo (args: Option<&str>) {
+pub fn echo(args: Option<&str>) {
     match args {
         Some(args) => println!("{}", args),
         None => println!(""),
@@ -51,7 +50,59 @@ pub fn pwd() -> Result<(), CommandError> {
         Ok(path) => {
             println!("{}", path.display());
             Ok(())
-        },
+        }
+        Err(_) => Err(CommandError::Failed),
+    }
+}
+fn set_oldpwd() {
+    std::env::set_var(
+        "OLDPWD",
+        std::env::current_dir().unwrap_or(std::path::PathBuf::new()),
+    );
+}
+
+pub fn cd(path: &str) -> Result<(), CommandError> {
+    match path {
+        "-" => {
+            let previous = match std::env::var("OLDPWD") {
+                Ok(path) => path,
+                Err(_) => return Err(CommandError::Failed),
+            };
+            set_oldpwd();
+            match std::env::set_current_dir(previous) {
+                Ok(_) => {
+                    return Ok(());
+                }
+                Err(_) => return Err(CommandError::Failed),
+            }
+        }
+        _ => (),
+    }
+
+    set_oldpwd();
+
+    match path {
+        "~" => {
+            let home = match std::env::var("HOME") {
+                Ok(home) => home,
+                Err(_) => return Err(CommandError::Failed),
+            };
+            match std::env::set_current_dir(home) {
+                Ok(_) => {
+                    // Set the OLDPWD variable to the current directory
+                    return Ok(());
+                }
+                Err(_) => {
+                    return Err(CommandError::Failed);
+                }
+            }
+        }
+        _ => (),
+    };
+    // TODO: Handle the - character, this needs to keep track of the previous directory
+
+    match std::env::set_current_dir(path) {
+        Ok(_) => Ok(()),
         Err(_) => Err(CommandError::Failed),
     }
 }
