@@ -11,7 +11,6 @@ fn tokenize(input: &str) -> Vec<&str> {
 }
 
 enum CommandError {
-    NotFound,
     WrongArguments,
     Failed,
 }
