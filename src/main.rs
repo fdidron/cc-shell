@@ -2,11 +2,18 @@
 use std::io::{self, Write};
 
 mod utils;
+mod builtins;
 
 const PROMPT: &str = "$ ";
 
 fn tokenize(input: &str) -> Vec<&str> {
     input.split_whitespace().collect()
+}
+
+enum CommandError {
+    NotFound,
+    WrongArguments,
+    Failed,
 }
 
 fn main() {
@@ -20,44 +27,23 @@ fn main() {
         if !raw.is_empty() {
             let tokens = tokenize(raw);
             match tokens[..] {
-                ["exit"] => std::process::exit(0),
-                ["exit", code] => {
-                    let code = code.parse::<i32>().unwrap_or(1);
-                    std::process::exit(code);
-                }
-                ["type", ..] => {
-                    let cmd = tokens[1];
-                    match cmd {
-                        "exit" | "type" | "echo" => println!("{} is a shell builtin", cmd),
-                        _ => {
-                            if let Some(path) = utils::find_executable(cmd) {
-                                println!("{} is {}", cmd, path.display());
-                            } else {
-                                println!("{} not found", cmd);
-                            }
-                        }
-                    }
-                }
-                ["echo"] => {
-                    println!("");
-                }
-                ["echo", ..] => {
-                    println!("{}", tokens[1..].join(" "));
-                }
+                ["exit"] => builtins::exit(),
+                ["exit", code] => match builtins::exit_with_code(code) {
+                        Ok(_) => (),
+                        Err(CommandError::WrongArguments) => eprintln!("exit: wrong arguments"),
+                        Err(_) => eprintln!("exit: failed to exit"),
+                },
+                ["type", ..] => builtins::type_cmd(tokens[1]),
+                ["echo"] => builtins::echo(None),
+                ["echo", ..] => builtins::echo(Some(&tokens[1..].join(" "))),
+                ["pwd"] => match builtins::pwd() {
+                    Ok(_) => (),
+                    Err(_) => eprintln!("pwd: failed to get current directory"),
+                },
                 _ => {
                     let cmd = tokens[0];
                     let args = &tokens[1..];
-                    if let Some(path) = utils::find_executable(cmd) {
-                        let status = std::process::Command::new(path)
-                            .args(args)
-                            .status()
-                            .expect("failed to execute process");
-                        if !status.success() {
-                            eprintln!("{}: command failed with status {}", raw, status);
-                        }
-                    } else {
-                        eprintln!("{}: command not found", raw)
-                    }
+                    builtins::execute(cmd, args);
                 }
             }
         }
